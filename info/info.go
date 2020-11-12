@@ -19,7 +19,10 @@ func New(prefix, key, name, addr string) *ServiceInfo {
 }
 
 func (s *ServiceInfo) String() string {
-	tmp, _ := json.Marshal(s)
+	tmp, err := json.Marshal(s)
+	if err != nil {
+		return ""
+	}
 	return string(tmp)
 }
 
