@@ -5,11 +5,11 @@ import (
 	"errors"
 	"github.com/codingXiang/go-logger/v2"
 	"github.com/codingXiang/service-discovery/info"
+	"github.com/codingXiang/service-discovery/util"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"go.etcd.io/etcd/clientv3"
 	"log"
 	"sync"
-	"time"
 )
 
 //ServiceDiscovery 服務發現
@@ -20,14 +20,11 @@ type ServiceDiscovery struct {
 }
 
 //New  新增服務發現實例
-func New(endpoints []string) *ServiceDiscovery {
+func New(auth *util.ETCDAuth) *ServiceDiscovery {
 	if logger.Log == nil {
 		logger.Log = logger.Default()
 	}
-	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   endpoints,
-		DialTimeout: 5 * time.Second,
-	})
+	cli, err := util.NewETCDClient(auth)
 	if err != nil {
 		log.Fatal(err)
 	}

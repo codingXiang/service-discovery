@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/codingXiang/go-logger/v2"
 	"github.com/codingXiang/service-discovery/info"
-	"github.com/coreos/etcd/clientv3"
-	"time"
+	"github.com/codingXiang/service-discovery/util"
+	"go.etcd.io/etcd/clientv3"
 )
 
 //ServiceRegister 创建租约注册服务
@@ -18,19 +18,15 @@ type ServiceRegister struct {
 }
 
 //New 新增註冊服務
-func New(endpoints []string, info *info.ServiceInfo, lease int64) (*ServiceRegister, error) {
+func New(auth *util.ETCDAuth, info *info.ServiceInfo, lease int64) (*ServiceRegister, error) {
 	if logger.Log == nil {
 		logger.Log = logger.Default()
 	}
-	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   endpoints,
-		DialTimeout: 5 * time.Second,
-	})
+
+	cli, err := util.NewETCDClient(auth)
 	if err != nil {
-		logger.Log.Fatal(err)
 		return nil, err
 	}
-
 	ser := &ServiceRegister{
 		cli: cli,
 		key: info.Prefix + info.Key,
